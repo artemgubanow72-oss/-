@@ -1,184 +1,237 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { useRef } from 'react'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import Link from 'next/link'
 
 const FEATURES = [
-  {
-    icon: '💰',
-    title: 'Маржа 40–60%',
-    desc: 'Оптовые цены от производителя. При розничной 250 ₽ и закупочной 85 ₽ — маржа 66%.',
-    color: '#F5A623',
-  },
-  {
-    icon: '🖥️',
-    title: 'Личный кабинет',
-    desc: 'Заказы, прайсы, документы, аналитика — всё онлайн 24/7 без звонков и бумаг.',
-    color: '#E94560',
-  },
-  {
-    icon: '🎨',
-    title: 'Конструктор носков',
-    desc: 'Загрузите логотип → 3D-превью за 30 минут → носки с вашим брендом от 50 пар.',
-    color: '#7C3AED',
-  },
-  {
-    icon: '📦',
-    title: 'Склад всегда полон',
-    desc: '500+ моделей в постоянном наличии. Отгрузка за 1 рабочий день по всей России.',
-    color: '#059669',
-  },
-  {
-    icon: '🤝',
-    title: 'Персональный менеджер',
-    desc: 'Ваш личный менеджер знает ваш бизнес. Ответ в течение 2 часов в рабочее время.',
-    color: '#0F3460',
-  },
-  {
-    icon: '📜',
-    title: 'Все документы',
-    desc: 'Честный ЗНАК, сертификаты ГОСТ, УПД, счета — всё в порядке и в кабинете.',
-    color: '#E94560',
-  },
-]
-
-const TIERS = [
-  { name: 'Старт 🌱',    range: 'от 50 пар/мес',    discount: '0%',   color: '#6B7280' },
-  { name: 'Серебро 🥈',  range: '500+ пар/мес',     discount: '5%',   color: '#94A3B8' },
-  { name: 'Золото 🥇',   range: '1000+ пар/мес',    discount: '10%',  color: '#F5A623', featured: true },
-  { name: 'Платинум 💎', range: '2000+ пар/мес',    discount: '15%',  color: '#C084FC' },
+  { icon: '💰', num: '01', title: 'Маржа 40–60%',     desc: 'Оптовые цены от производителя без посредников',   color: '#F5A623' },
+  { icon: '🖥️', num: '02', title: 'Кабинет 24/7',     desc: 'Заказы, прайсы, документы — всё онлайн',          color: '#E94560' },
+  { icon: '🎨', num: '03', title: 'Конструктор носков',desc: '3D-превью с вашим логотипом за 30 минут',         color: '#7C3AED' },
+  { icon: '📦', num: '04', title: 'Склад всегда полон',desc: '500+ моделей. Отгрузка за 1 рабочий день',       color: '#059669' },
+  { icon: '🤝', num: '05', title: 'Менеджер за 2 часа',desc: 'Персональный — знает ваш бизнес',                 color: '#0891B2' },
+  { icon: '📜', num: '06', title: 'Все документы',      desc: 'Честный ЗНАК, ГОСТ, УПД — всё в порядке',        color: '#E94560' },
 ]
 
 export default function B2BSection() {
+  const sectionRef = useRef<HTMLElement>(null)
+  const titleRef   = useRef<HTMLDivElement>(null)
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  })
+
+  // Параллакс заголовка
+  const titleX = useTransform(scrollYProgress, [0, 1], ['5%', '-8%'])
+
+  const BIG_WORDS = [
+    { w: 'ЗАРАБАТЫВАЙ', solid: true  },
+    { w: '✦',           solid: false },
+    { w: 'НА',          solid: false },
+    { w: 'НОСКАХ',      solid: true  },
+    { w: '✦',           solid: false },
+    { w: 'B2B',         solid: false },
+    { w: 'ЭКОСИСТЕМА',  solid: false },
+    { w: '✦',           solid: false },
+  ]
+
   return (
-    <section className="py-24 bg-[#0D0D1A]">
-      <div className="container mx-auto px-4">
+    <section ref={sectionRef} className="py-32 bg-[#060608] overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 md:px-12">
 
-        {/* Заголовок */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <span className="text-[#F5A623] text-sm font-medium tracking-wider uppercase">
-            B2B Экосистема
-          </span>
-          <h2
-            className="font-black text-white mt-3 leading-none"
-            style={{ fontSize: 'clamp(2.5rem,6vw,6rem)' }}
+        {/* ── ПАРАЛЛАКС ЗАГОЛОВОК ── */}
+        <div className="overflow-hidden mb-16 -mx-6 md:-mx-12">
+          <motion.div
+            ref={titleRef}
+            style={{ x: titleX }}
+            className="flex items-baseline gap-6 md:gap-10 py-4 whitespace-nowrap"
           >
-            ЗАРАБАТЫВАЙ{' '}
-            <span className="text-transparent bg-clip-text bg-wool-gradient">
-              НА НОСКАХ
-            </span>
-          </h2>
-          <p className="text-white/40 text-lg mt-4 max-w-xl mx-auto">
-            Готовая B2B платформа для дилеров. Всё что нужно для бизнеса — в одном месте.
-          </p>
-        </motion.div>
+            {BIG_WORDS.map((item, i) => {
+              const isStar = item.w === '✦'
+              return (
+                <span
+                  key={i}
+                  className={`font-black leading-none select-none ${
+                    isStar ? 'text-[#E94560]/35' : ''
+                  }`}
+                  style={{
+                    fontSize: isStar
+                      ? 'clamp(2rem,5vw,5rem)'
+                      : 'clamp(2.5rem,8vw,9rem)',
+                    color: item.solid && !isStar ? 'white' : undefined,
+                    WebkitTextStroke:
+                      !item.solid && !isStar
+                        ? '1px rgba(255,255,255,0.08)'
+                        : undefined,
+                    WebkitTextFillColor:
+                      !item.solid && !isStar ? 'transparent' : undefined,
+                  }}
+                >
+                  {item.w}
+                </span>
+              )
+            })}
+          </motion.div>
+        </div>
 
-        {/* Преимущества */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-20">
+        {/* ── СПИСОК ФИЧЕЙ ── */}
+        <div className="divide-y divide-white/[0.04] mb-20">
           {FEATURES.map((f, i) => (
             <motion.div
               key={f.title}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              whileHover={{ y: -8 }}
-              className="group p-7 rounded-2xl glass border border-white/10 hover:border-white/20 transition-all overflow-hidden relative"
+              initial={{ opacity: 0, x: -25 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: '-50px' }}
+              transition={{ delay: i * 0.07, duration: 0.6, ease: [0.16,1,0.3,1] }}
+              whileHover={{ x: 12 }}
+              className="group flex items-center gap-5 md:gap-8 py-5 md:py-6
+                         -mx-4 px-4 rounded-xl
+                         hover:bg-white/[0.02]
+                         transition-all duration-400 cursor-default"
             >
-              <div
-                className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500"
+              {/* Номер */}
+              <span
+                className="font-mono text-xs font-black w-7 shrink-0
+                           text-white/[0.07] group-hover:text-[#E94560]
+                           transition-colors duration-300"
+              >
+                {f.num}
+              </span>
+
+              {/* Иконка */}
+              <span
+                className="text-2xl md:text-3xl shrink-0
+                           transition-transform duration-500
+                           group-hover:scale-125 group-hover:rotate-6"
+              >
+                {f.icon}
+              </span>
+
+              {/* Текст */}
+              <div className="flex-1 min-w-0">
+                <h3
+                  className="text-white font-bold text-base md:text-lg
+                             group-hover:text-[#E94560]
+                             transition-colors duration-300"
+                >
+                  {f.title}
+                </h3>
+                <p className="text-white/25 text-sm mt-0.5 truncate">
+                  {f.desc}
+                </p>
+              </div>
+
+              {/* Цветная точка */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                whileHover={{ opacity: 1, scale: 1 }}
+                className="w-2 h-2 rounded-full shrink-0"
                 style={{ backgroundColor: f.color }}
               />
-              <div className="relative">
-                <div className="flex items-start justify-between mb-4">
-                  <span className="text-5xl">{f.icon}</span>
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-black"
-                    style={{ backgroundColor: f.color + '20', color: f.color }}
-                  >
-                    {String(i + 1).padStart(2, '0')}
-                  </div>
-                </div>
-                <h3 className="text-white font-black text-xl mb-3">{f.title}</h3>
-                <p className="text-white/50 text-sm leading-relaxed">{f.desc}</p>
-              </div>
             </motion.div>
           ))}
         </div>
 
-        {/* Тарифы */}
+        {/* ── CTA БЛОК ── */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-16"
+          viewport={{ once: true, margin: '-80px' }}
+          className="relative overflow-hidden rounded-3xl p-10 md:p-16 text-center"
+          style={{
+            background:
+              'linear-gradient(135deg,rgba(233,69,96,0.06) 0%, rgba(245,166,35,0.04) 100%)',
+            border: '1px solid rgba(255,255,255,0.05)',
+          }}
         >
-          <h3 className="text-center text-3xl font-black text-white mb-10">
-            Партнёрские уровни
-          </h3>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {TIERS.map((tier, i) => (
-              <motion.div
-                key={tier.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className={`
-                  relative p-6 rounded-2xl border text-center transition-all
-                  ${tier.featured
-                    ? 'border-[#F5A623]/50 bg-[#F5A623]/5'
-                    : 'glass border-white/10'
-                  }
-                `}
-              >
-                {tier.featured && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="px-3 py-1 rounded-full bg-[#E94560] text-white text-xs font-black">
-                      ПОПУЛЯРНЫЙ
-                    </span>
-                  </div>
-                )}
-                <h4 className="text-white font-black text-lg mb-2">{tier.name}</h4>
-                <p className="text-white/40 text-xs mb-4">{tier.range}</p>
-                <div
-                  className="text-3xl font-black"
-                  style={{ color: tier.color }}
-                >
-                  -{tier.discount}
-                </div>
-                <p className="text-white/30 text-xs mt-1">скидка на всё</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+          {/* Декор круги */}
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 35, repeat: Infinity, ease: 'linear' }}
+            className="absolute -top-24 -right-24 w-96 h-96 rounded-full
+                       border border-[#E94560]/08 pointer-events-none"
+          />
+          <motion.div
+            animate={{ rotate: -360 }}
+            transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
+            className="absolute -bottom-20 -left-20 w-72 h-72 rounded-full
+                       border border-[#F5A623]/06 pointer-events-none"
+          />
 
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center"
-        >
-          <Link href="/b2b/dealer">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.97 }}
-              className="px-12 py-5 rounded-2xl bg-wool-gradient text-white font-black text-xl shadow-wool"
+          {/* Glow */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                'radial-gradient(circle at 50% 50%, rgba(233,69,96,0.08) 0%, transparent 65%)',
+            }}
+          />
+
+          <div className="relative z-10">
+            <motion.div
+              animate={{ rotate: [0, 12, -12, 0] }}
+              transition={{ duration: 3.5, repeat: Infinity }}
+              className="text-6xl mb-6 inline-block"
             >
-              🤝 Стать дилером SHERSTON
-            </motion.button>
-          </Link>
-          <p className="text-white/30 text-sm mt-4">
-            Заявка за 3 минуты • Менеджер звонит за 2 часа
-          </p>
+              🧦
+            </motion.div>
+
+            <h3
+              className="font-black text-white leading-none mb-6"
+              style={{ fontSize: 'clamp(2rem, 5vw, 5rem)' }}
+            >
+              ГОТОВЫ НАЧАТЬ?
+            </h3>
+
+            <p className="text-white/35 text-lg mb-10 max-w-md mx-auto leading-relaxed">
+              150+ дилеров уже зарабатывают с нами.
+              Заявка за 3 минуты. Менеджер за 2 часа.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+              <Link href="/b2b/dealer">
+                <motion.button
+                  whileHover={{ scale: 1.07, y: -4 }}
+                  whileTap={{ scale: 0.96 }}
+                  className="relative px-10 py-5 rounded-full font-black text-white text-lg overflow-hidden"
+                  style={{ background: 'linear-gradient(135deg,#E94560,#F5A623)' }}
+                >
+                  <span className="relative z-10">🤝 Стать дилером</span>
+                  <motion.div
+                    className="absolute inset-0 bg-white/20"
+                    initial={{ x: '-100%' }}
+                    whileHover={{ x: '100%' }}
+                    transition={{ duration: 0.45 }}
+                  />
+                </motion.button>
+              </Link>
+
+              <Link href="/catalog">
+                <motion.button
+                  whileHover={{ scale: 1.07, y: -4 }}
+                  className="px-10 py-5 rounded-full font-bold text-white/50
+                             hover:text-white border border-white/10
+                             hover:border-white/25 transition-all text-lg"
+                >
+                  📦 Каталог
+                </motion.button>
+              </Link>
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-5 text-white/20 text-xs">
+              {[
+                '✓ Без взносов',
+                '✓ Договор онлайн',
+                '✓ Первый заказ за 1 день',
+                '✓ Менеджер за 2 часа',
+              ].map((t) => (
+                <span key={t}>{t}</span>
+              ))}
+            </div>
+          </div>
         </motion.div>
       </div>
     </section>
   )
-        }
+}
