@@ -1,183 +1,372 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import Link from 'next/link'
 
-const FACTS = [
-  { icon: '💰', text: 'Маржа 40–60%' },
-  { icon: '📦', text: 'Отгрузка за 1 день' },
-  { icon: '🧦', text: '500+ моделей' },
-  { icon: '🤝', text: '150+ дилеров' },
-]
+/* ─── КАСТОМНЫЙ КУРСОР ─── */
+function CustomCursor() {
+  const dot    = useRef<HTMLDivElement>(null)
+  const ring   = useRef<HTMLDivElement>(null)
+  const [big, setBig] = useState(false)
 
-const BENTO = [
-  { icon: '📦', title: 'Каталог 500+ моделей', desc: 'Шерсть, мерино, ангора, эко', href: '/catalog',   col: 'md:col-span-2', grad: 'from-[#E94560]/20' },
-  { icon: '🎨', title: 'Конструктор носков',   desc: 'Загрузи логотип → 3D превью', href: '/custom',    col: '',              grad: 'from-[#F5A623]/20' },
-  { icon: '🤝', title: 'B2B Платформа',        desc: 'Кабинет дилера онлайн 24/7',  href: '/b2b',       col: '',              grad: 'from-blue-500/20'  },
-  { icon: '🌿', title: 'Эко-линейка',          desc: 'GOTS. 100% органика',          href: '/catalog/eco',col: '',             grad: 'from-emerald-500/20'},
-]
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    let mx = 0, my = 0, rx = 0, ry = 0, raf = 0
 
-export default function HeroSection() {
+    const onMove = (e: MouseEvent) => {
+      mx = e.clientX
+      my = e.clientY
+      if (dot.current) {
+        dot.current.style.transform =
+          `translate(${mx}px,${my}px) translate(-50%,-50%)`
+      }
+    }
+
+    const loop = () => {
+      rx += (mx - rx) * 0.11
+      ry += (my - ry) * 0.11
+      if (ring.current) {
+        ring.current.style.transform =
+          `translate(${rx}px,${ry}px) translate(-50%,-50%)`
+      }
+      raf = requestAnimationFrame(loop)
+    }
+
+    window.addEventListener('mousemove', onMove, { passive: true })
+    raf = requestAnimationFrame(loop)
+
+    const over = () => setBig(true)
+    const out  = () => setBig(false)
+    document.querySelectorAll('a,button').forEach(el => {
+      el.addEventListener('mouseenter', over)
+      el.addEventListener('mouseleave', out)
+    })
+
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      cancelAnimationFrame(raf)
+    }
+  }, [])
+
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden bg-[#0D0D1A]">
-
-      {/* Фон */}
-      <div className="absolute inset-0 bg-hero-mesh opacity-30 animate-gradient-shift bg-[length:400%_400%]" />
-      <div className="absolute inset-0 opacity-[0.03]"
+    <>
+      <div
+        ref={dot}
+        className="fixed top-0 left-0 z-[99999] pointer-events-none rounded-full bg-[#E94560]"
         style={{
-          backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1) 1px,transparent 1px)',
-          backgroundSize: '80px 80px',
+          width: 8, height: 8,
+          mixBlendMode: 'difference',
+          willChange: 'transform',
         }}
       />
-
-      {/* Орбы */}
-      <motion.div
-        animate={{ x: [0,50,0], y: [0,-30,0] }}
-        transition={{ duration: 12, repeat: Infinity }}
-        className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full blur-[120px] opacity-20 bg-[#E94560] pointer-events-none"
+      <div
+        ref={ring}
+        className="fixed top-0 left-0 z-[99998] pointer-events-none rounded-full border border-[#E94560]/50 transition-all duration-300"
+        style={{
+          width:  big ? 64 : 36,
+          height: big ? 64 : 36,
+          background: big ? 'rgba(233,69,96,0.08)' : 'transparent',
+          willChange: 'transform',
+        }}
       />
-      <motion.div
-        animate={{ x: [0,-40,0], y: [0,40,0] }}
-        transition={{ duration: 10, repeat: Infinity, delay: 2 }}
-        className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full blur-[120px] opacity-15 bg-[#F5A623] pointer-events-none"
+      <style jsx global>{`
+        body, a, button { cursor: none !important; }
+      `}</style>
+    </>
+  )
+}
+
+/* ─── GRAIN OVERLAY ─── */
+function Grain() {
+  return (
+    <div
+      className="fixed inset-0 z-[99997] pointer-events-none"
+      style={{
+        opacity: 0.045,
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+        animation: 'grain 0.4s steps(1) infinite',
+      }}
+    />
+  )
+}
+
+/* ─── SCROLL PROGRESS ─── */
+function ScrollBar() {
+  const { scrollYProgress } = useScroll()
+  const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1])
+  return (
+    <motion.div
+      style={{ scaleX, originX: 0 }}
+      className="fixed top-0 left-0 right-0 h-[2px] z-[9999] origin-left"
+      aria-hidden
+    >
+      <div className="w-full h-full"
+        style={{ background: 'linear-gradient(90deg, #E94560, #F5A623)' }}
       />
+    </motion.div>
+  )
+}
 
-      <div className="container mx-auto px-4 pt-28 pb-20 relative z-10">
+/* ─── MARQUEE ─── */
+function Marquee() {
+  const items = [
+    'SHERSTON','✦','WOOL ECOSYSTEM','✦',
+    'B2B ПЛАТФОРМА','✦','500+ МОДЕЛЕЙ','✦',
+    '20 ЛЕТ КАЧЕСТВА','✦','РАССКАЗОВО','✦',
+  ]
+  const doubled = [...items, ...items]
 
-        {/* Бейдж */}
+  return (
+    <div className="overflow-hidden border-y border-white/[0.05] py-4 select-none">
+      <motion.div
+        animate={{ x: ['0%', '-50%'] }}
+        transition={{ duration: 28, repeat: Infinity, ease: 'linear' }}
+        className="flex gap-10 whitespace-nowrap w-max"
+      >
+        {doubled.map((item, i) => (
+          <span
+            key={i}
+            className={`text-[10px] font-bold tracking-[7px] uppercase ${
+              item === '✦'
+                ? 'text-[#E94560]/40 text-lg'
+                : i % 6 === 0
+                ? 'text-white/25'
+                : 'text-white/10'
+            }`}
+          >
+            {item}
+          </span>
+        ))}
+      </motion.div>
+    </div>
+  )
+}
+
+/* ─── ГЛАВНЫЙ HERO ─── */
+export default function HeroSection() {
+  const sectionRef = useRef<HTMLElement>(null)
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end start'],
+  })
+
+  const opacity = useTransform(scrollYProgress, [0, 0.55], [1, 0])
+  const y       = useTransform(scrollYProgress, [0, 1],    ['0%', '-25%'])
+
+  const words = [
+    { text: 'ШЕРСТЯНЫЕ', accent: false },
+    { text: 'НОСКИ',     accent: true  },
+    { text: 'ДЛЯ',       accent: false },
+    { text: 'БИЗНЕСА',   accent: false },
+  ]
+
+  return (
+    <>
+      <CustomCursor />
+      <Grain />
+      <ScrollBar />
+
+      <section
+        ref={sectionRef}
+        className="relative min-h-[100svh] flex flex-col bg-[#060608] overflow-hidden"
+      >
+        {/* СЕТКА */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
+              linear-gradient(90deg,rgba(255,255,255,0.022) 1px, transparent 1px)
+            `,
+            backgroundSize: '80px 80px',
+            maskImage:
+              'radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%)',
+          }}
+        />
+
+        {/* ORB 1 */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex justify-center mb-10"
-        >
-          <div className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#E94560]/30 bg-[#E94560]/10 backdrop-blur-sm">
-            <span className="w-2 h-2 rounded-full bg-[#E94560] animate-pulse" />
-            <span className="text-sm text-[#E94560] font-semibold">
-              Производитель • Рассказово, Тамбовская обл.
-            </span>
-          </div>
-        </motion.div>
+          className="absolute -top-[20%] -left-[10%] w-[60vw] h-[60vw] rounded-full pointer-events-none"
+          style={{
+            background:
+              'radial-gradient(circle, rgba(233,69,96,0.14) 0%, transparent 70%)',
+            filter: 'blur(80px)',
+            y: useTransform(scrollYProgress, [0,1], [0,-150]),
+          }}
+          animate={{ scale: [1, 1.2, 1], rotate: [0, 30, 0] }}
+          transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+        />
 
-        {/* Заголовок */}
-        <div className="text-center mb-12 overflow-hidden">
-          {['ШЕРСТЯНЫЕ', 'НОСКИ', 'ДЛЯ БИЗНЕСА'].map((word, i) => (
+        {/* ORB 2 */}
+        <motion.div
+          className="absolute -bottom-[10%] -right-[5%] w-[45vw] h-[45vw] rounded-full pointer-events-none"
+          style={{
+            background:
+              'radial-gradient(circle, rgba(245,166,35,0.1) 0%, transparent 70%)',
+            filter: 'blur(100px)',
+          }}
+          animate={{ scale: [1, 1.3, 1] }}
+          transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut', delay: 4 }}
+        />
+
+        {/* КОНТЕНТ */}
+        <motion.div
+          style={{ opacity, y }}
+          className="relative z-10 flex flex-col flex-1"
+        >
+          {/* BADGE */}
+          <div className="pt-32 md:pt-36 px-6 md:px-12 lg:px-16">
             <motion.div
-              key={word}
-              initial={{ y: '110%', skewY: 5 }}
-              animate={{ y: 0, skewY: 0 }}
-              transition={{ delay: 0.2 + i * 0.15, duration: 0.8, ease: [0.16,1,0.3,1] }}
-              className="block overflow-hidden"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x:   0 }}
+              transition={{ delay: 0.15, duration: 0.7, ease: [0.16,1,0.3,1] }}
+              className="inline-flex items-center gap-3 mb-10"
             >
-              <span
-                className={`block font-black leading-none tracking-tight ${i === 1 ? 'text-transparent bg-clip-text bg-wool-gradient' : 'text-white'}`}
-                style={{ fontSize: 'clamp(3.5rem,9vw,10rem)' }}
-              >
-                {word}
+              <span className="relative flex h-2 w-2 shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E94560] opacity-70" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E94560]" />
+              </span>
+              <span className="text-[11px] text-white/30 tracking-[5px] uppercase font-medium">
+                Производитель · Рассказово · Тамбовская обл.
               </span>
             </motion.div>
-          ))}
-        </div>
+          </div>
 
-        {/* Подзаголовок */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-          className="text-center text-xl text-white/50 max-w-2xl mx-auto mb-8 leading-relaxed"
-        >
-          Производитель шерстяных носков с 20-летним опытом.
-          Собственная B2B экосистема для дилеров — от заказа
-          до кастомного дизайна с вашим логотипом.
-        </motion.p>
+          {/* TITLE */}
+          <div className="px-4 md:px-8 lg:px-14 flex-1">
+            <div style={{ perspective: '1200px' }}>
+              {words.map((word, wi) => (
+                <div key={word.text} className="overflow-hidden leading-[0.87]">
+                  <motion.div
+                    initial={{ y: '105%', rotateX: -25 }}
+                    animate={{ y: '0%',   rotateX:   0 }}
+                    transition={{
+                      delay:    0.35 + wi * 0.13,
+                      duration: 0.85,
+                      ease: [0.16, 1, 0.3, 1],
+                    }}
+                  >
+                    <span
+                      className="block font-black tracking-tight"
+                      style={{
+                        fontSize: 'clamp(3rem, 13.5vw, 15rem)',
+                        lineHeight: 0.87,
+                        ...(word.accent
+                          ? {
+                              background:
+                                'linear-gradient(135deg,#E94560 0%,#F5A623 45%,#E94560 100%)',
+                              backgroundSize: '200% auto',
+                              WebkitBackgroundClip: 'text',
+                              WebkitTextFillColor: 'transparent',
+                              animation: 'shimmer 4s linear infinite',
+                            }
+                          : { color: 'white' }),
+                      }}
+                    >
+                      {word.text}
+                    </span>
+                  </motion.div>
+                </div>
+              ))}
+            </div>
 
-        {/* Факты */}
+            {/* SUB + CTA */}
+            <motion.div
+              initial={{ opacity: 0, y: 35 }}
+              animate={{ opacity: 1, y:  0 }}
+              transition={{ delay: 0.95, duration: 0.8, ease: [0.16,1,0.3,1] }}
+              className="mt-10 md:mt-14 grid md:grid-cols-2 gap-10 pb-14"
+            >
+              {/* ОПИСАНИЕ */}
+              <div>
+                <p className="text-white/35 text-base md:text-lg leading-relaxed max-w-sm mb-8">
+                  Производитель шерстяных носков с 20-летним опытом.
+                  B2B экосистема от заказа до носков с вашим логотипом.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    '💰 Маржа 40–60%',
+                    '📦 Отгрузка 1 день',
+                    '🎨 Конструктор',
+                    '🌿 Eco 10/10',
+                  ].map((f) => (
+                    <span
+                      key={f}
+                      className="px-3 py-1.5 rounded-full text-xs text-white/40
+                                 border border-white/[0.07]
+                                 hover:border-white/20 hover:text-white/60
+                                 transition-colors duration-300"
+                    >
+                      {f}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* КНОПКИ */}
+              <div className="flex flex-col gap-3 md:items-end justify-end">
+                <Link href="/b2b/dealer">
+                  <motion.button
+                    whileHover={{ scale: 1.06, x: 6 }}
+                    whileTap={{ scale: 0.97 }}
+                    className="relative flex items-center gap-4 px-8 py-4 rounded-full
+                               font-bold text-white overflow-hidden w-full md:w-auto justify-center"
+                    style={{
+                      background: 'linear-gradient(135deg,#E94560,#F5A623)',
+                    }}
+                  >
+                    <span className="relative z-10">Стать дилером</span>
+                    <motion.span
+                      animate={{ x: [0, 6, 0] }}
+                      transition={{ duration: 1.8, repeat: Infinity }}
+                      className="relative z-10"
+                    >→</motion.span>
+                    <motion.div
+                      className="absolute inset-0 bg-white/20"
+                      initial={{ x: '-100%' }}
+                      whileHover={{ x: '100%' }}
+                      transition={{ duration: 0.45 }}
+                    />
+                  </motion.button>
+                </Link>
+
+                <Link href="/custom">
+                  <motion.button
+                    whileHover={{ scale: 1.06 }}
+                    whileTap={{ scale: 0.97 }}
+                    className="flex items-center gap-3 px-8 py-4 rounded-full
+                               text-white/50 hover:text-white
+                               border border-white/[0.08] hover:border-white/25
+                               transition-all duration-300
+                               w-full md:w-auto justify-center"
+                  >
+                    🎨 Конструктор носков
+                  </motion.button>
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* MARQUEE */}
+          <Marquee />
+        </motion.div>
+
+        {/* SCROLL INDICATOR */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.85 }}
-          className="flex flex-wrap justify-center gap-3 mb-12"
+          transition={{ delay: 2.2 }}
+          className="absolute bottom-8 right-6 md:right-10 z-20 flex items-center gap-3 text-white/20"
         >
-          {FACTS.map((f) => (
-            <div key={f.text} className="flex items-center gap-2 px-4 py-2 rounded-full glass text-sm text-white/70">
-              <span>{f.icon}</span>{f.text}
-            </div>
-          ))}
+          <motion.span
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 1.8, repeat: Infinity }}
+          >↓</motion.span>
+          <span className="text-[10px] tracking-[4px] uppercase">Скролл</span>
         </motion.div>
-
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.0 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center mb-20"
-        >
-          <Link href="/b2b/dealer">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.97 }}
-              className="relative px-10 py-5 rounded-2xl bg-wool-gradient text-white font-black text-xl shadow-wool overflow-hidden group"
-            >
-              <span className="relative z-10 flex items-center gap-3">
-                🤝 Стать дилером
-                <motion.span animate={{ x: [0,4,0] }} transition={{ duration: 1.5, repeat: Infinity }}>→</motion.span>
-              </span>
-              <motion.div className="absolute inset-0 bg-white/10" initial={{ x: '-100%' }} whileHover={{ x: '100%' }} transition={{ duration: 0.5 }} />
-            </motion.button>
-          </Link>
-
-          <Link href="/custom">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.97 }}
-              className="px-10 py-5 rounded-2xl glass border border-white/20 text-white font-bold text-xl hover:border-[#F5A623]/50 transition-colors"
-            >
-              🎨 Конструктор носков
-            </motion.button>
-          </Link>
-        </motion.div>
-
-        {/* Bento Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.1 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto"
-        >
-          {BENTO.map((item, i) => (
-            <motion.div
-              key={item.title}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.2 + i * 0.1 }}
-              whileHover={{ y: -8, scale: 1.02 }}
-              className={`${item.col} group relative rounded-2xl overflow-hidden glass border border-white/10 hover:border-[#E94560]/30 transition-all duration-300`}
-            >
-              <Link href={item.href} className="absolute inset-0 z-10" />
-              <div className={`absolute inset-0 bg-gradient-to-br ${item.grad} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-              <div className="relative p-6">
-                <span className="text-4xl block mb-3">{item.icon}</span>
-                <h3 className="text-white font-bold text-lg mb-1">{item.title}</h3>
-                <p className="text-white/50 text-sm mb-4">{item.desc}</p>
-                <span className="text-[#E94560]/70 text-sm font-medium group-hover:text-[#E94560] transition-colors">
-                  Подробнее →
-                </span>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-
-      {/* Scroll */}
-      <motion.div
-        animate={{ y: [0,8,0] }}
-        transition={{ duration: 2, repeat: Infinity }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-      >
-        <span className="text-white/20 text-xs tracking-widest uppercase">Скролл</span>
-        <div className="w-5 h-9 rounded-full border-2 border-white/20 flex items-start justify-center p-1">
-          <motion.div animate={{ y: [0,14,0] }} transition={{ duration: 2, repeat: Infinity }} className="w-1.5 h-1.5 rounded-full bg-white/40" />
-        </div>
-      </motion.div>
-    </section>
+      </section>
+    </>
   )
         }
