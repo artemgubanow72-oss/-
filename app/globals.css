@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -11,33 +11,165 @@
 }
 
 html {
-  scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background-color: #0D0D1A;
+  background: #060608;
   color: white;
   font-family: 'Inter', sans-serif;
   overflow-x: hidden;
+  cursor: none;
 }
 
-::-webkit-scrollbar       { width: 6px; }
-::-webkit-scrollbar-track { background: #0D0D1A; }
-::-webkit-scrollbar-thumb { background: rgba(233,69,96,0.4); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #E94560; }
-
-::selection {
-  background: rgba(233,69,96,0.3);
-  color: white;
+/* Скроллбар */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: #060608; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #E94560, #F5A623);
+  border-radius: 2px;
 }
+::selection { background: #E94560; color: white; }
 
+/* Убираем скроллбар */
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
+/* Стекло */
 .glass {
-  background: rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.08);
 }
+
+/* Градиентный текст */
+.gradient-text {
+  background: linear-gradient(135deg, #E94560, #F5A623);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================
+   АНИМАЦИИ
+   ============================ */
+
+/* Shimmer для текста */
+@keyframes shimmer {
+  0%   { background-position: 0% center; }
+  100% { background-position: -200% center; }
+}
+
+/* Зерно/шум */
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10%       { transform: translate(-2%, -2%); }
+  20%       { transform: translate(2%, 2%); }
+  30%       { transform: translate(-1%, 1%); }
+  40%       { transform: translate(1%, -1%); }
+  50%       { transform: translate(-2%, 1%); }
+  60%       { transform: translate(2%, -2%); }
+  70%       { transform: translate(-1%, -1%); }
+  80%       { transform: translate(1%, 2%); }
+  90%       { transform: translate(-2%, 2%); }
+}
+
+/* Пинг (пульсация) */
+@keyframes ping-slow {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50%       { transform: scale(1.4); opacity: 0; }
+}
+
+/* Плавание */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33%       { transform: translateY(-20px) rotate(2deg); }
+  66%       { transform: translateY(-10px) rotate(-2deg); }
+}
+
+/* Вращение */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Marquee */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* Slide up */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(60px) skewY(2deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) skewY(0);
+  }
+}
+
+/* Reveal */
+@keyframes reveal {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0% 0 0); }
+}
+
+/* Utility классы */
+.animate-float    { animation: float 8s ease-in-out infinite; }
+.animate-spin-slow { animation: spin-slow 25s linear infinite; }
+.animate-marquee  { animation: marquee 25s linear infinite; }
+.animate-slide-up { animation: slideUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-reveal   { animation: reveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+/* Cursor hover state */
+.cursor-hover-active {
+  width: 70px !important;
+  height: 70px !important;
+  background: rgba(233, 69, 96, 0.1) !important;
+  border-color: rgba(233, 69, 96, 0.6) !important;
+}
+
+/* Perspective для 3D анимаций */
+.perspective-1000 { perspective: 1000px; }
+.perspective-2000 { perspective: 2000px; }
+
+/* Gradient borders */
+.border-gradient {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(#060608, #060608) padding-box,
+    linear-gradient(135deg, #E94560, #F5A623) border-box;
+}
+
+/* Текстовый stroke */
+.text-stroke {
+  -webkit-text-stroke: 1px rgba(255,255,255,0.15);
+  -webkit-text-fill-color: transparent;
+}
+
+.text-stroke-red {
+  -webkit-text-stroke: 1px rgba(233,69,96,0.4);
+  -webkit-text-fill-color: transparent;
+}
+
+/* Lenis smooth scroll */
+html.lenis {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+    }
