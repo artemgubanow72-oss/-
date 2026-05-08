@@ -231,11 +231,13 @@ export default function ScrollytellingSection() {
       {/* Прогресс линия слева */}
       <div className="absolute left-6 md:left-12 top-0 bottom-0 w-px bg-white/[0.04]">
         <motion.div
-          style={{ height: lineHeight }}
+      {/* Прогресс линия слева */}
+      <div className="absolute left-6 md:left-12 top-0 bottom-0 w-px bg-white/[0.04]">
+        <motion.div
           className="w-full origin-top"
           style={{
+            height: lineHeight,
             background: 'linear-gradient(180deg, #E94560, #F5A623)',
-            height: lineHeight as any,
           }}
         />
       </div>
