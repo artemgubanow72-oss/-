@@ -231,9 +231,6 @@ export default function ScrollytellingSection() {
       {/* Прогресс линия слева */}
       <div className="absolute left-6 md:left-12 top-0 bottom-0 w-px bg-white/[0.04]">
         <motion.div
-      {/* Прогресс линия слева */}
-      <div className="absolute left-6 md:left-12 top-0 bottom-0 w-px bg-white/[0.04]">
-        <motion.div
           className="w-full origin-top"
           style={{
             height: lineHeight,
@@ -322,4 +319,4 @@ export default function ScrollytellingSection() {
       </div>
     </section>
   )
-          }
+}
