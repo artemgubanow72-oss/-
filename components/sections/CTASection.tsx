@@ -1,74 +1,145 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { useRef } from 'react'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import Link from 'next/link'
 
+const MANIFESTO = [
+  'МЫ ДЕЛАЕМ НОСКИ',
+  'КОТОРЫЕ НОСЯТ',
+  'ЛЮДИ',
+]
+
 export default function CTASection() {
+  const ref = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start end', 'end start'],
+  })
+  const scale = useTransform(scrollYProgress, [0, 0.5], [0.85, 1])
+  const opacity = useTransform(scrollYProgress, [0, 0.3], [0, 1])
+
   return (
-    <section className="py-24 bg-[#0D0D1A]">
-      <div className="container mx-auto px-4">
+    <section ref={ref} className="py-32 bg-[#060608] overflow-hidden relative">
+
+      {/* Гигантский фоновый текст — Kotsur стиль */}
+      <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
+        <motion.span
+          animate={{ opacity: [0.015, 0.035, 0.015] }}
+          transition={{ duration: 5, repeat: Infinity }}
+          className="font-black text-white whitespace-nowrap select-none"
+          style={{
+            fontSize: 'clamp(6rem, 20vw, 22rem)',
+            lineHeight: 1,
+            WebkitTextStroke: '1px rgba(255,255,255,0.04)',
+            WebkitTextFillColor: 'transparent',
+          }}
+        >
+          SHERSTON
+        </motion.span>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
+
+        {/* Манифест */}
+        <motion.div
+          style={{ scale, opacity }}
+          className="text-center mb-16"
+        >
+          {MANIFESTO.map((line, i) => (
+            <div key={i} className="overflow-hidden">
+              <motion.p
+                initial={{ y: '100%' }}
+                whileInView={{ y: 0 }}
+                viewport={{ once: true }}
+                transition={{
+                  delay: i * 0.12,
+                  duration: 0.9,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className="font-black leading-none"
+                style={{
+                  fontSize: 'clamp(2.5rem, 9vw, 11rem)',
+                  color: i === 2
+                    ? 'transparent'
+                    : i === 1
+                    ? 'rgba(255,255,255,0.9)'
+                    : 'rgba(255,255,255,0.3)',
+                  background: i === 2
+                    ? 'linear-gradient(135deg, #E94560, #F5A623)'
+                    : undefined,
+                  WebkitBackgroundClip: i === 2 ? 'text' : undefined,
+                  WebkitTextFillColor: i === 2 ? 'transparent' : undefined,
+                }}
+              >
+                {line}
+              </motion.p>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* CTA Блок */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="max-w-4xl mx-auto relative p-12 md:p-16 rounded-3xl overflow-hidden text-center"
-          style={{ background: 'linear-gradient(135deg, #1A1A2E, #0F3460)' }}
+          className="grid md:grid-cols-3 gap-4 max-w-3xl mx-auto"
         >
-          {/* Декор */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#E94560]/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#F5A623]/20 rounded-full blur-3xl" />
-
-          <div className="relative z-10">
-            <motion.div
-              animate={{ rotate: [0, 10, -10, 0] }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="text-7xl mb-6 block"
-            >
-              🧦
-            </motion.div>
-
-            <h2
-              className="font-black text-white mb-6 leading-none"
-              style={{ fontSize: 'clamp(2rem,5vw,5rem)' }}
-            >
-              ГОТОВЫ К{' '}
-              <span className="text-transparent bg-clip-text bg-wool-gradient">
-                СОТРУДНИЧЕСТВУ?
-              </span>
-            </h2>
-
-            <p className="text-white/50 text-lg mb-10 max-w-xl mx-auto leading-relaxed">
-              Присоединяйтесь к экосистеме SHERSTON — более 150 дилеров
-              уже зарабатывают с нами по всей России
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/b2b/dealer">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="px-10 py-5 rounded-2xl bg-wool-gradient text-white font-black text-xl shadow-wool"
-                >
-                  🤝 Стать дилером
-                </motion.button>
-              </Link>
-              <Link href="/custom">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  className="px-10 py-5 rounded-2xl border-2 border-white/30 text-white font-bold text-xl hover:border-[#F5A623]/50 transition-colors"
-                >
-                  🎨 Конструктор носков
-                </motion.button>
-              </Link>
-            </div>
-
-            <div className="flex flex-wrap justify-center gap-6 mt-10 text-white/40 text-sm">
-              <span>✅ Без взносов</span>
-              <span>✅ Договор онлайн</span>
-              <span>✅ Первый заказ за 1 день</span>
-              <span>✅ Менеджер за 2 часа</span>
-            </div>
+          {/* Главная CTA */}
+          <div className="md:col-span-2">
+            <Link href="/b2b/dealer">
+              <motion.button
+                whileHover={{ scale: 1.04, y: -4 }}
+                whileTap={{ scale: 0.97 }}
+                className="w-full py-6 rounded-2xl font-black text-white text-xl
+                           relative overflow-hidden"
+                style={{
+                  background: 'linear-gradient(135deg, #E94560, #F5A623)',
+                  boxShadow: '0 12px 50px rgba(233,69,96,0.4)',
+                }}
+              >
+                <motion.div
+                  className="absolute inset-0 bg-white/15"
+                  initial={{ x: '-100%' }}
+                  whileHover={{ x: '100%' }}
+                  transition={{ duration: 0.5 }}
+                />
+                <span className="relative z-10">🤝 Стать дилером SHERSTON</span>
+              </motion.button>
+            </Link>
           </div>
+
+          {/* Вторая CTA */}
+          <Link href="/custom">
+            <motion.button
+              whileHover={{ scale: 1.04, y: -4 }}
+              className="w-full py-6 rounded-2xl font-bold text-white/50
+                         hover:text-white border border-white/[0.08]
+                         hover:border-white/20 transition-all text-lg h-full"
+            >
+              🎨 Конструктор
+            </motion.button>
+          </Link>
+        </motion.div>
+
+        {/* Trust indicators */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3 }}
+          className="flex flex-wrap justify-center gap-6 mt-10 text-white/20 text-xs"
+        >
+          {[
+            '✓ Без взносов',
+            '✓ Договор онлайн',
+            '✓ Первый заказ за 1 день',
+            '✓ Менеджер за 2 часа',
+            '✓ Честный ЗНАК',
+            '✓ ГОСТ сертификат',
+          ].map((t) => (
+            <span key={t} className="hover:text-white/50 transition-colors">{t}</span>
+          ))}
         </motion.div>
       </div>
     </section>
