@@ -1,11 +1,15 @@
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import HeroSection from '@/components/sections/HeroSection'
-import StatsSection from '@/components/sections/StatsSection'
 import AgenticHero from '@/components/sections/AgenticHero'
+import StatsSection from '@/components/sections/StatsSection'
 import BentoEcosystem from '@/components/sections/BentoEcosystem'
+import StackScrollSection from '@/components/sections/StackScrollSection'
 import ScrollytellingSection from '@/components/sections/ScrollytellingSection'
 import CatalogPreview from '@/components/sections/CatalogPreview'
+import OrganicSection from '@/components/sections/OrganicSection'
+import PlayfulSection from '@/components/sections/PlayfulSection'
+import MinimalismSection from '@/components/sections/MinimalismSection'
 import ROISection from '@/components/sections/ROISection'
 import TestimonialsSection from '@/components/sections/TestimonialsSection'
 import CTASection from '@/components/sections/CTASection'
@@ -17,31 +21,43 @@ export default function HomePage() {
       <FAQSchema />
       <Navbar />
       <main>
-        {/* CO&IN + Sheep Inc. → кинематографичный hero */}
+        {/* ТРЕНД: Кинетика + Глитч + Органика + Ретро */}
         <HeroSection />
 
-        {/* Agentic UX → персонализация под дилера/розницу */}
+        {/* ТРЕНД: Agentic UX — персонализация */}
         <AgenticHero />
 
-        {/* Aran Woollen Mills → цифры с историей */}
+        {/* ТРЕНД: Минимализм 2.0 — числа */}
         <StatsSection />
 
-        {/* Bento Grid → модульная экосистема */}
+        {/* ТРЕНД: Bento Grid */}
         <BentoEcosystem />
 
-        {/* Scrollytelling → от шерсти до носка */}
+        {/* ТРЕНД: Stacking Scroll */}
+        <StackScrollSection />
+
+        {/* ТРЕНД: Scrollytelling */}
         <ScrollytellingSection />
 
-        {/* CO&IN editorial → каталог как журнал */}
+        {/* ТРЕНД: Editorial каталог */}
         <CatalogPreview />
 
-        {/* BM Steel конфигуратор → ROI калькулятор */}
+        {/* ТРЕНД: Органические формы + Eco */}
+        <OrganicSection />
+
+        {/* ТРЕНД: Игривость + 3D персонажи */}
+        <PlayfulSection />
+
+        {/* ТРЕНД: Минимализм 2.0 — цитата */}
+        <MinimalismSection />
+
+        {/* ТРЕНД: Конфигуратор (BM Steel) */}
         <ROISection />
 
-        {/* Lupine Lights → отзывы дилеров */}
+        {/* ТРЕНД: B2B/B2C переключение */}
         <TestimonialsSection />
 
-        {/* CTA */}
+        {/* ТРЕНД: Манифест бренда */}
         <CTASection />
       </main>
       <Footer />
