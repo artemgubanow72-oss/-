@@ -1,63 +1,65 @@
-import Navbar from '@/components/layout/Navbar'
-import Footer from '@/components/layout/Footer'
-import HeroSection from '@/components/sections/HeroSection'
-import AgenticHero from '@/components/sections/AgenticHero'
-import StatsSection from '@/components/sections/StatsSection'
-import BentoEcosystem from '@/components/sections/BentoEcosystem'
-import StackScrollSection from '@/components/sections/StackScrollSection'
-import ScrollytellingSection from '@/components/sections/ScrollytellingSection'
-import CatalogPreview from '@/components/sections/CatalogPreview'
-import OrganicSection from '@/components/sections/OrganicSection'
-import PlayfulSection from '@/components/sections/PlayfulSection'
-import MinimalismSection from '@/components/sections/MinimalismSection'
-import ROISection from '@/components/sections/ROISection'
-import TestimonialsSection from '@/components/sections/TestimonialsSection'
-import CTASection from '@/components/sections/CTASection'
-import { FAQSchema } from '@/components/seo/SchemaOrg'
+import Navbar from '../components/layout/Navbar'
+import Footer from '../components/layout/Footer'
+import HeroSection from '../components/sections/HeroSection'
+import AgenticHero from '../components/sections/AgenticHero'
+import StatsSection from '../components/sections/StatsSection'
+import BentoEcosystem from '../components/sections/BentoEcosystem'
+import StackScrollSection from '../components/sections/StackScrollSection'
+import ScrollytellingSection from '../components/sections/ScrollytellingSection'
+import CatalogPreview from '../components/sections/CatalogPreview'
+import OrganicSection from '../components/sections/OrganicSection'
+import PlayfulSection from '../components/sections/PlayfulSection'
+import MinimalismSection from '../components/sections/MinimalismSection'
+import ROISection from '../components/sections/ROISection'
+import B2BSection from '../components/sections/B2BSection'
+import TestimonialsSection from '../components/sections/TestimonialsSection'
+import CTASection from '../components/sections/CTASection'
 
 export default function HomePage() {
   return (
     <>
-      <FAQSchema />
       <Navbar />
-      <main>
-        {/* ТРЕНД: Кинетика + Глитч + Органика + Ретро */}
+      <main className="grain-overlay">
+        {/* 1. ГЛАВНЫЙ ЭКРАН (Анимация + 3D) */}
         <HeroSection />
 
-        {/* ТРЕНД: Agentic UX — персонализация */}
+        {/* 2. ПЕРСОНАЛИЗАЦИЯ ПОД КЛИЕНТА (Agentic UX) */}
         <AgenticHero />
 
-        {/* ТРЕНД: Минимализм 2.0 — числа */}
+        {/* 3. ЧИСЛА И ДОСТИЖЕНИЯ (Минимализм 2.0) */}
         <StatsSection />
 
-        {/* ТРЕНД: Bento Grid */}
+        {/* 4. МОДУЛЬНАЯ СЕТКА ЭКОСИСТЕМЫ */}
         <BentoEcosystem />
 
-        {/* ТРЕНД: Stacking Scroll */}
+        {/* 5. ИНТЕРАКТИВНЫЙ СТЕК-СКРОЛЛ */}
         <StackScrollSection />
 
-        {/* ТРЕНД: Scrollytelling */}
+        {/* 6. ПУТЬ ПРОИЗВОДСТВА (Scrollytelling) */}
         <ScrollytellingSection />
 
-        {/* ТРЕНД: Editorial каталог */}
+        {/* 7. ЭСТЕТИЧНЫЙ КАТАЛОГ (Editorial style) */}
         <CatalogPreview />
 
-        {/* ТРЕНД: Органические формы + Eco */}
+        {/* 8. ЭКО-ФОКУС И ОРГАНИКА */}
         <OrganicSection />
 
-        {/* ТРЕНД: Игривость + 3D персонажи */}
+        {/* 9. ИГРОВЫЕ ЭЛЕМЕНТЫ (Levity) */}
         <PlayfulSection />
 
-        {/* ТРЕНД: Минимализм 2.0 — цитата */}
+        {/* 10. ФУНДАМЕНТАЛЬНЫЙ МИНИМАЛИЗМ */}
         <MinimalismSection />
 
-        {/* ТРЕНД: Конфигуратор (BM Steel) */}
+        {/* 11. B2B СЕРВИСЫ */}
+        <B2BSection />
+
+        {/* 12. КАЛЬКУЛЯТОР ПРИБЫЛИ (ROI) */}
         <ROISection />
 
-        {/* ТРЕНД: B2B/B2C переключение */}
+        {/* 13. ОТЗЫВЫ ПАРТНЕРОВ */}
         <TestimonialsSection />
 
-        {/* ТРЕНД: Манифест бренда */}
+        {/* 14. ФИНАЛЬНЫЙ ПРИЗЫВ (Manifesto) */}
         <CTASection />
       </main>
       <Footer />
