@@ -1,28 +1,31 @@
 'use client'
 
-import { useEffect, ReactNode } from 'react'
+import { useEffect, ReactNode, useRef } from 'react'
 
 export default function SmoothScrollProvider({
   children,
 }: {
   children: ReactNode
 }) {
+  const lenisRef = useRef<any>(null)
+  const rafCallbackRef = useRef<((time: number) => void) | null>(null)
+
   useEffect(() => {
-    let lenis: any
-    let gsapInstance: any
-    let ScrollTriggerInstance: any
+    let mounted = true
 
     const init = async () => {
       try {
-        const Lenis = (await import('lenis')).default
-        const { gsap } = await import('gsap')
-        const { ScrollTrigger } = await import('gsap/ScrollTrigger')
+        const [{ default: Lenis }, { gsap }, { ScrollTrigger }] = await Promise.all([
+          import('lenis'),
+          import('gsap'),
+          import('gsap/ScrollTrigger').then((m) => ({ ScrollTrigger: m.ScrollTrigger })),
+        ])
+
+        if (!mounted) return
 
         gsap.registerPlugin(ScrollTrigger)
-        gsapInstance = gsap
-        ScrollTriggerInstance = ScrollTrigger
 
-        lenis = new Lenis({
+        const lenis = new Lenis({
           duration: 1.4,
           easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
           orientation: 'vertical',
@@ -31,35 +34,43 @@ export default function SmoothScrollProvider({
           touchMultiplier: 2,
         })
 
-        // Синхронизация с GSAP
+        lenisRef.current = lenis
+
         lenis.on('scroll', ScrollTrigger.update)
 
-        gsap.ticker.add((time: number) => {
+        const rafCallback = (time: number) => {
           lenis.raf(time * 1000)
-        })
+        }
+        rafCallbackRef.current = rafCallback
 
+        gsap.ticker.add(rafCallback)
         gsap.ticker.lagSmoothing(0)
 
-        // Глобальный доступ
         ;(window as any).__lenis = lenis
-        ;(window as any).__gsap = gsap
-        ;(window as any).__ScrollTrigger = ScrollTrigger
-
       } catch (e) {
-        console.warn('Smooth scroll init failed:', e)
+        console.warn('SmoothScroll init error:', e)
       }
     }
 
     init()
 
     return () => {
+      mounted = false
       try {
-        if (lenis) lenis.destroy()
-        if (gsapInstance && ScrollTriggerInstance) {
-          ScrollTriggerInstance.getAll().forEach((t: any) => t.kill())
-          gsapInstance.ticker.remove(() => {})
+        if (lenisRef.current) {
+          lenisRef.current.destroy()
+          lenisRef.current = null
         }
-      } catch (e) {}
+        if (rafCallbackRef.current) {
+          import('gsap').then(({ gsap }) => {
+            if (rafCallbackRef.current) {
+              gsap.ticker.remove(rafCallbackRef.current)
+            }
+          })
+        }
+      } catch (e) {
+        // silent
+      }
     }
   }, [])
 
