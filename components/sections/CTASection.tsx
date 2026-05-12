@@ -54,7 +54,6 @@ export default function CTASection() {
 
       <div className="max-w-5xl mx-auto px-6 md:px-12 relative z-10">
         <motion.div style={{ scale, opacity }}>
-
           {/* Манифест */}
           <div className="text-center mb-16">
             {MANIFESTO.map((line, i) => (
@@ -149,7 +148,6 @@ export default function CTASection() {
               </span>
             ))}
           </motion.div>
-
         </motion.div>
       </div>
     </section>
