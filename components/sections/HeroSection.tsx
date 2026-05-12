@@ -6,22 +6,24 @@ import Link from 'next/link'
 
 /* ── Кастомный курсор ── */
 function SmartCursor() {
-  const dotRef  = useRef<HTMLDivElement>(null)
+  const dotRef = useRef<HTMLDivElement>(null)
   const ringRef = useRef<HTMLDivElement>(null)
   const [hovered, setHovered] = useState(false)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
 
-    let mx = 0, my = 0, rx = 0, ry = 0
+    let mx = 0,
+      my = 0,
+      rx = 0,
+      ry = 0
     let rafId: number
 
     const onMove = (e: MouseEvent) => {
       mx = e.clientX
       my = e.clientY
       if (dotRef.current) {
-        dotRef.current.style.transform =
-          `translate(${mx}px,${my}px) translate(-50%,-50%)`
+        dotRef.current.style.transform = `translate(${mx}px,${my}px) translate(-50%,-50%)`
       }
     }
 
@@ -29,14 +31,13 @@ function SmartCursor() {
       rx += (mx - rx) * 0.1
       ry += (my - ry) * 0.1
       if (ringRef.current) {
-        ringRef.current.style.transform =
-          `translate(${rx}px,${ry}px) translate(-50%,-50%)`
+        ringRef.current.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`
       }
       rafId = requestAnimationFrame(tick)
     }
 
     const onOver = () => setHovered(true)
-    const onOut  = () => setHovered(false)
+    const onOut = () => setHovered(false)
 
     window.addEventListener('mousemove', onMove, { passive: true })
     rafId = requestAnimationFrame(tick)
@@ -68,11 +69,9 @@ function SmartCursor() {
         ref={ringRef}
         className="fixed top-0 left-0 z-[99998] pointer-events-none rounded-full border transition-all duration-300"
         style={{
-          width:  hovered ? 64 : 36,
+          width: hovered ? 64 : 36,
           height: hovered ? 64 : 36,
-          borderColor: hovered
-            ? 'rgba(233,69,96,0.8)'
-            : 'rgba(255,255,255,0.25)',
+          borderColor: hovered ? 'rgba(233,69,96,0.8)' : 'rgba(255,255,255,0.25)',
           background: hovered ? 'rgba(233,69,96,0.08)' : 'transparent',
           willChange: 'transform',
         }}
@@ -87,7 +86,7 @@ function Grain() {
     <div
       className="fixed inset-0 z-[99997] pointer-events-none opacity-[0.042]"
       style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='30'/%3E%3C/filter%3E%3Crect width='512' height='512' filter='url(%23n)'/%3E%3C/svg%3E")`,
         animation: 'grain 0.35s steps(1) infinite',
       }}
     />
@@ -115,10 +114,20 @@ function ScrollProgress() {
 /* ── Marquee ── */
 function Marquee() {
   const items = [
-    'SHERSTON','✦','WOOL ECOSYSTEM','✦',
-    'B2B ПЛАТФОРМА','✦','500+ МОДЕЛЕЙ','✦',
-    '20 ЛЕТ','✦','РАССКАЗОВО','✦',
-    'ОТГРУЗКА 1 ДЕНЬ','✦',
+    'SHERSTON',
+    '✦',
+    'WOOL ECOSYSTEM',
+    '✦',
+    'B2B ПЛАТФОРМА',
+    '✦',
+    '500+ МОДЕЛЕЙ',
+    '✦',
+    '20 ЛЕТ',
+    '✦',
+    'РАССКАЗОВО',
+    '✦',
+    'ОТГРУЗКА 1 ДЕНЬ',
+    '✦',
   ]
   const doubled = [...items, ...items]
   return (
@@ -153,13 +162,13 @@ export default function HeroSection() {
     offset: ['start start', 'end start'],
   })
   const opacity = useTransform(scrollYProgress, [0, 0.6], [1, 0])
-  const yPos    = useTransform(scrollYProgress, [0, 1], ['0%', '-20%'])
+  const yPos = useTransform(scrollYProgress, [0, 1], ['0%', '-20%'])
 
   const WORDS = [
     { text: 'ШЕРСТЯНЫЕ', accent: false },
-    { text: 'НОСКИ',     accent: true  },
-    { text: 'ДЛЯ',       accent: false },
-    { text: 'БИЗНЕСА',   accent: false },
+    { text: 'НОСКИ', accent: true },
+    { text: 'ДЛЯ', accent: false },
+    { text: 'БИЗНЕСА', accent: false },
   ]
 
   return (
@@ -176,8 +185,7 @@ export default function HeroSection() {
         <div
           className="absolute inset-0 pointer-events-none grid-bg"
           style={{
-            maskImage:
-              'radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%)',
+            maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%)',
           }}
         />
 
@@ -185,8 +193,10 @@ export default function HeroSection() {
         <motion.div
           className="absolute pointer-events-none rounded-full"
           style={{
-            top: '-20%', left: '-10%',
-            width: '60vw', height: '60vw',
+            top: '-20%',
+            left: '-10%',
+            width: '60vw',
+            height: '60vw',
             background: 'radial-gradient(circle, rgba(233,69,96,0.14) 0%, transparent 70%)',
             filter: 'blur(90px)',
             y: useTransform(scrollYProgress, [0, 1], [0, -120]),
@@ -199,8 +209,10 @@ export default function HeroSection() {
         <motion.div
           className="absolute pointer-events-none rounded-full"
           style={{
-            bottom: '-10%', right: '-5%',
-            width: '45vw', height: '45vw',
+            bottom: '-10%',
+            right: '-5%',
+            width: '45vw',
+            height: '45vw',
             background: 'radial-gradient(circle, rgba(245,166,35,0.1) 0%, transparent 70%)',
             filter: 'blur(110px)',
           }}
@@ -209,10 +221,7 @@ export default function HeroSection() {
         />
 
         {/* Контент */}
-        <motion.div
-          style={{ opacity, y: yPos }}
-          className="relative z-10 flex flex-col flex-1"
-        >
+        <motion.div style={{ opacity, y: yPos }} className="relative z-10 flex flex-col flex-1">
           {/* Badge */}
           <div className="pt-32 md:pt-36 px-6 md:px-12 lg:px-16">
             <motion.div
@@ -232,10 +241,7 @@ export default function HeroSection() {
           </div>
 
           {/* Title */}
-          <div
-            className="px-4 md:px-8 lg:px-14 flex-1"
-            style={{ perspective: '1200px' }}
-          >
+          <div className="px-4 md:px-8 lg:px-14 flex-1" style={{ perspective: '1200px' }}>
             {WORDS.map((word, wi) => (
               <div key={word.text} className="overflow-hidden leading-[0.87]">
                 <motion.div
