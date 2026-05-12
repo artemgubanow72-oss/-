@@ -190,7 +190,7 @@ export const CATALOG: Product[] = [
     colors: ['Чёрный', 'Белый', 'Тёмно-синий'],
     colorHex: ['#111111', '#FFFFFF', '#1A1A2E'],
     ecoScore: 7.8,
-    inStock: true,
+    inStock: false,
     stockQty: 0,
     isNew: false,
     isBestseller: true,
